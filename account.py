@@ -2,6 +2,7 @@ from baseAccount import CBaseAccount
 from atomicTransaction import check_if_my_connection
 
 
+
 class CAccount(CBaseAccount):
     def __init__(self, DB, accountName, address):
         self.kade = DB

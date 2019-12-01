@@ -1,2 +1,3 @@
-.dat
-.sqlite
+*.dat
+*.sqlite
+.idea
