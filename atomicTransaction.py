@@ -59,7 +59,7 @@ class CAtomicTransaction:
         self.amount = amount
         self.optData = optData
         if time is None:
-            self.time = str(dt.datetime.strftime(dt.datetime.today(), '%Y-%m-%d %H:%M:%S'))
+            self.time = str(dt.datetime.strftime(dt.datetime.utcnow(), '%Y-%m-%dT%H:%M:%S'))
         else:
             self.time = time
 
@@ -71,12 +71,12 @@ class CAtomicTransaction:
 
     def setParameters(self, par):
         _token, _sender, _recipient, self.amount, self.optData, self.time = par
-        self.token.setParameters(_token)
-        self.token.update()
-        self.sender.setParameters(_sender)
-        self.sender.update()
-        self.recipient.setParameters(_recipient)
-        self.recipient.update()
+        self.token.setParameters(_token, with_transactions=False)
+        self.token.update(deep=False)
+        self.sender.setParameters(_sender, with_transactions=False)
+        self.sender.update(deep=False)
+        self.recipient.setParameters(_recipient, with_transactions=False)
+        self.recipient.update(deep=False)
 
     def get_for_hash(self):
         _token = self.token.address

@@ -87,7 +87,7 @@ class Mbox(object):
 				if data != '' and CWallet().check_password(data) is False:
 					messagebox.showerror('Password validation', 'Password validation fails')
 				else:
-					chainnet = CInitChainnet('@main', data)
+					chainnet = CInitChainnet('main', data)
 					app = Application(master=self.root, chainnet=chainnet)
 					self.root.geometry('1000x600')
 					self.top.destroy()
@@ -109,7 +109,7 @@ class Mbox(object):
 						messagebox.showerror('Password validation', 'Repeated password does not match')
 				self.top.destroy()
 			elif key == 'set_password':
-				chainnet = CInitChainnet('@main', password=data, from_scratch=True)
+				chainnet = CInitChainnet('main', password=data, from_scratch=True)
 				app = Application(master=self.root, chainnet=chainnet)
 				self.root.geometry('1000x600')
 				self.top.destroy()

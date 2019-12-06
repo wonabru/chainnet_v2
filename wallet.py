@@ -23,7 +23,7 @@ class CWallet:
 
 	def check_password(self, password):
 		_wallet = CWallet(name_of_wallet=None)
-		if _wallet.loadWallet('@main', password=password) is None:
+		if _wallet.loadWallet('main', password=password) is None:
 			return False
 		return True
 
@@ -94,7 +94,7 @@ class CWallet:
 
 	def check_if_main_exist(self):
 		import os
-		return os.path.isfile("./wallets_cipher/" + '@main' + ".wallet.dat")
+		return os.path.isfile("./wallets_cipher/" + 'main' + ".wallet.dat")
 
 	def checkWalletExist(self, name_of_wallet, raiseErrorIfNotExist = True):
 		self.RSAkey = self.loadWallet(name_of_wallet, wallet_password)
@@ -104,7 +104,7 @@ class CWallet:
 		if self.RSAkey is None:
 			self.RSAkey = RSA.generate(1024)
 			self.saveWallet(self.exportDER(self.RSAkey), self.getPublicKey(self.RSAkey), wallet_password, overwrite=True)
-			if name_of_wallet == '@main':
+			if name_of_wallet == 'main':
 				self.saveWallet(self.exportDER(self.RSAkey), name_of_wallet, wallet_password, overwrite=True)
 		else:
 			self.RSAkey = self.importFromDER(self.RSAkey)

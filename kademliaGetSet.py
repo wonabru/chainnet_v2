@@ -32,6 +32,9 @@ class CDataBase(object):
         self.loop = asyncio.get_event_loop()
         return self.loop.run_until_complete(self.server.get(key))
 
+    def clear(self, key):
+        self.set(key, str(None))
+
     def bootstrap(self, nodes):
         self.loop = asyncio.get_event_loop()
         bootstrap_node = []

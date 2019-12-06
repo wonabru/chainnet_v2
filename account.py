@@ -15,15 +15,15 @@ class CAccount(CBaseAccount):
         account.update()
         check_if_my_connection(self, creator)
         self.chain.uniqueAccounts[address] = account
-        account.save(announce='EXTERNAL')
+        account.chain.uniqueAccounts[self.address] = self
+        account.save(announce='Account;')
         self.save()
         return account
 
-    def save(self, announce='Account:', who_is_signing=None):
+    def save(self, announce='Account;', who_is_signing=None):
+        #self.update()
         super().save(announce, who_is_signing=who_is_signing)
         
-    def update(self):
-        super().update()
+    def update(self, deep=True):
+        super().update(deep)
 
-    def update_look_at(self):
-        super().update_look_at()

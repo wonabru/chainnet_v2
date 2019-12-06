@@ -1,4 +1,4 @@
-from sqlitedict import SqliteDict
+from sqlitedict import SqliteDict, SqliteMultithread
 import os
 
 class CDataBase(object):
@@ -8,25 +8,34 @@ class CDataBase(object):
         except:
             pass
         self.mydict = SqliteDict(os.path.join('DB', 'my_db.sqlite'), autocommit=True)
-        self.show()
+        self.show('')
 
     def set(self, key, value):
         self.mydict[key] = value
-            
+
+    def iskey(self, key):
+        return key in self.mydict.keys()
+
     def get(self, key):
-        if key in self.mydict.keys():
+        ret = None
+        try:
             ret = self.mydict[key]
-        else:
-            ret = None
+        except KeyError:
+
+            for k in self.mydict.keys():
+                if key == k[:len(key)]:
+                    ret = self.mydict[k]
+                    break
         return ret
     
     def show(self, start_with=''):
         for key, value in self.mydict.items():
-            if key.find(start_with):
+            if key.find(start_with) >= 0:
                 print(key, '\t', value, '\n')
     
-    def clear(self):
-        self.mydict.clear()
+    def clear(self, key):
+        if key in self.mydict.keys():
+            del self.mydict[key]
         
     def close(self):
         self.mydict.close()

@@ -2,6 +2,8 @@ from sqllite import CDataBase as sqllite
 from kademliaGetSet import CDataBase
 import socket
 from isolated_functions import *
+import time
+import multiprocessing as mp
 
 instance_kade = None
 
@@ -21,46 +23,63 @@ class CSQLLite():
             self.sqllite = instance_kade.sqllite
             self.kade = instance_kade.kade
 
-
     def save(self, key, value, announce=''):
-        if isinstance(key, str) == False:
+        if not isinstance(key, str):
             key = str(key)
-        if announce == 'EXTERNAL':
-            _current = self.sqllite.get(announce)
-            if _current is None:
-                self.sqllite.set(key=announce, value=[key, ])
-            else:
-                _current.append(key)
-                _current = list(set(_current))
-                self.sqllite.set(key=announce, value=_current)
-
+        key = announce + key
+        _current = self.sqllite.get('KADEMLIA')
+        if _current is None:
+            self.sqllite.set(key='KADEMLIA', value=[key, ])
         else:
-            _not_save_local = self.sqllite.get('EXTERNAL')
+            _current.append(key)
+            _current = list(set(_current))
+            self.sqllite.set(key='KADEMLIA', value=_current)
 
-            if _not_save_local is None:
-                _not_save_local = []
+        self.announce(key, str(value))
 
-            if not (key in _not_save_local and announce == 'Account:'):
-                self.sqllite.set(key=announce + key, value=value)
+        self.sqllite.set(key, str(value))
 
-                if announce != '':
-                    self.announce(announce + key, value)
-        return self.sqllite.get(announce + key)
+        return self.sqllite.get(key)
+
+    def clone_kademlia(self):
+
+        key_list = self.sqllite.get('KADEMLIA')
+        if key_list is not None:
+            for key in key_list:
+                value = self.look_at(key)
+                if value is not None:
+                    self.sqllite.set(key=key, value=str(value))
+                else:
+                    print('NO key found in KADEMLIA: {}'.format(key))
 
     def get(self, key):
-        if isinstance(key, str) == False: key = str(key)
-        return self.sqllite.get(key=key)
+        return self.look_at(key)
+
+    def clear(self, key, announce=''):
+        if not isinstance(key, str):
+            key = str(key)
+        key = announce + key
+        _current = self.sqllite.get('KADEMLIA')
+        if _current is not None and key in _current:
+
+            _current.remove(key)
+            self.sqllite.set(key='KADEMLIA', value=_current)
+
+        self.kade.clear(key)
+
+        self.sqllite.clear(key)
 
     def announce(self, key, value):
-        print('KADEMLIA SET: ', key, ' = ', self.kade.set(key=key, value=str(value)))
+        self.kade.set(key=key, value=str(value))
 
     def look_at(self, key):
         if not isinstance(key, str):
             key = str(key)
-        response = self.kade.get(key=key)
+        response = self.sqllite.get(key)
+        if response is None:
+            response = self.kade.get(key=key)
 
         if response is not None:
-            #self.save(key, response)
             try:
                 response = str2obj(response)
             except:

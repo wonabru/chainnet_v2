@@ -1,6 +1,6 @@
 import datetime as dt
 from Crypto import Hash
-from wallet import CWallet, serialize
+from wallet import CWallet
 from isolated_functions import *
 from atomicTransaction import CAtomicTransaction
 
@@ -11,7 +11,7 @@ class CTransaction:
         self.signatures = {}
         self.senders = []
         self.recipients = []
-        self.timeToClose = str(dt.datetime.strftime(timeToClose, '%Y-%m-%d %H:%M:%S'))
+        self.timeToClose = str(dt.datetime.strftime(timeToClose, '%Y-%m-%dT%H:%M:%S'))
         self.noAtomicTransactions = noAtomicTransactions
 
     def getParameters(self):
@@ -43,15 +43,15 @@ class CTransaction:
         self.senders = []
         for _sender in _senders:
             _temp_sender = CAccount(DB, '?', None)
-            _temp_sender.setParameters(_sender)
-            _temp_sender.update()
+            _temp_sender.setParameters(_sender, with_transactions=False)
+            _temp_sender.update(deep=False)
             self.senders.append(_temp_sender)
 
         self.recipients = []
         for _recipient in _recipients:
             _temp_recipient = CAccount(DB, '?', None)
-            _temp_recipient.setParameters(_recipient)
-            _temp_recipient.update()
+            _temp_recipient.setParameters(_recipient, with_transactions=False)
+            _temp_recipient.update(deep=False)
             self.recipients.append(_temp_recipient)
 
 
@@ -75,8 +75,8 @@ class CTransaction:
             raise Exception('Add Transaction', 'Verification fails')
 
         try:
-            if dt.datetime.strptime(self.timeToClose, '%Y-%m-%d %H:%M:%S') < dt.datetime.strptime(
-                    atomicTransaction.time, '%Y-%m-%d %H:%M:%S'):
+            if dt.datetime.strptime(self.timeToClose, '%Y-%m-%dT%H:%M:%S') < dt.datetime.strptime(
+                    atomicTransaction.time, '%Y-%m-%dT%H:%M:%S'):
                 raise Exception('Add Transaction', 'Time to finish transaction just elapsed')
 
         except Exception as ex:

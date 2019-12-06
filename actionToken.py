@@ -7,28 +7,33 @@ class CActionToken(CAccount):
         self.creator = 0
         super().__init__(DB, tokenName, address)
         self.minAmount = 10 ** -self.decimalPlace
-        self.totalSupply = initialSupply
-        self.owner = creator
-        self.owner.setAmount(self, initialSupply)
-        self.setAmount(self, 0)
-        self.chain.uniqueAccounts[creator.address] = creator
+        if creator is None:
+            pass
+        else:
+            self.totalSupply = initialSupply
+            self.owner = creator
+            self.owner.setAmount(self, initialSupply)
+            self.setAmount(self, 0)
+            self.chain.uniqueAccounts[creator.address] = creator
 
 
-    def save(self, announce='Account:', who_is_signing=None):
+    def save(self, announce='Account;', who_is_signing=None):
         super().save(announce, who_is_signing)
-        self.kade.save('actionToken:' + self.address, [self.totalSupply, self.owner.address])
+        self.kade.save('actionToken;' + self.address, [self.totalSupply, self.owner.address])
 
     def update(self):
-        par = self.kade.get('actionToken:' + self.address)
-        self.totalSupply, _address = par
+        par = self.kade.get('actionToken;' + self.address)
+        _address = None
+        if par is not None:
+            self.totalSupply, _address = par
+        self.minAmount = 10 ** -self.decimalPlace
 
         super().update()
 
-        self.minAmount = 10 ** -self.decimalPlace
-
-        _account = CAccount(self.kade, '?', _address)
-        _account.update()
-        self.owner = _account
+        if _address is not None:
+            _account = CAccount(self.kade, '?', _address)
+            _account.update()
+            self.owner = _account
 
     def showAll(self):
         #self.update()

@@ -14,19 +14,23 @@ class CLimitedToken(CAccount):
             self.setAmount(self, 0)
             self.chain.uniqueAccounts[creator.address] = creator
 
-    def save(self, announce='Account:', who_is_signing=None):
+    def save(self, announce='Account;', who_is_signing=None):
         super().save(announce, who_is_signing)
-        self.kade.save('limitedToken:' + self.address, [self.totalSupply, self.owner.address])
+        self.kade.save('limitedToken;' + self.address, [self.totalSupply, self.owner.address])
 
     def update(self):
-        par = self.kade.get('limitedToken:' + self.address)
-        self.totalSupply, _address = par
+        par = self.kade.get('limitedToken;' + self.address)
+
+        _address = None
+        if par is not None:
+            self.totalSupply, _address = par
 
         super().update()
 
-        _account = CAccount(self.kade, '?', _address)
-        _account.update()
-        self.owner = _account
+        if _address is not None:
+            _account = CAccount(self.kade, '?', _address)
+            _account.update()
+            self.owner = _account
 
     def showAll(self):
         #self.update()
