@@ -158,7 +158,7 @@ class CBaseAccount:
 
             _hash = _txn.check_add_return_hash(_atomic, _signSender, _signRecipient)
 
-            _txn.add(_atomic,_signSender, _signRecipient)
+            _txn.add(_atomic, _signSender, _signRecipient)
             _atomic.token.chain.addTransaction(_txn)
             _atomic.sender.chain.addTransaction(_txn)
             _atomic.recipient.chain.addTransaction(_txn)
