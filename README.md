@@ -53,7 +53,7 @@ https://www.draw.io/?lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&page
 
 How to run prototype:
     
-     git clone https://github.com/wonabru/chainnet.git
+     git clone https://github.com/wonabru/chainnet_v2.git
      cd chainnet
      mkdir DB
      mkdir wallets_cipher
